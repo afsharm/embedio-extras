@@ -43,8 +43,10 @@ namespace Unosquare.Labs.EmbedIO.BearerToken
                 return true;
             });
 
-            AddHandler(ModuleMap.AnyPath, HttpVerbs.Any, (server, context) =>
+            ResponseHandler rh = (server, context) =>
             {
+                context.Response.Headers.Add("Access-Control-Allow-Origin: *");
+
                 if (routes != null && routes.Contains(context.RequestPath()) == false) return false;
 
                 var authHeader = context.RequestHeader(AuthorizationHeader);
@@ -74,7 +76,10 @@ namespace Unosquare.Labs.EmbedIO.BearerToken
                 context.Rejected();
 
                 return true;
-            });
+            };
+
+            AddHandler(ModuleMap.AnyPath, HttpVerbs.Post, rh);
+            AddHandler(ModuleMap.AnyPath, HttpVerbs.Get, rh);
         }
 
         /// <summary>
