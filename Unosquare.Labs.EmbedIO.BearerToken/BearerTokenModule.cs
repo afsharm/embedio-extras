@@ -60,9 +60,15 @@ namespace Unosquare.Labs.EmbedIO.BearerToken
 
                         if (payload == null || payload.Count == 0) throw new Exception("Invalid token");
 
+                        var user = payload.Keys.Any(x => x == "User") ? payload["User"] : null;
+                        var userName = user?.ToString();
+
+                        if (string.IsNullOrWhiteSpace(userName) == false)
+                            context.Response.Headers.Add("User", userName);
+
                         return false;
                     }
-                    catch (JWT.SignatureVerificationException)
+                    catch (JWT.SignatureVerificationException ex)
                     {
                         server.Log.DebugFormat("Invalid token {0}", authHeader);
                         throw;
